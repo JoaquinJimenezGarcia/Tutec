@@ -9,7 +9,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 //TODO: Configure routes
-
+var userRoutes = require('./routes/user')
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*')
@@ -21,6 +21,6 @@ app.use((req, res, next) => {
 })
 
 // TODO: Configure base routes
-// app.use('/api', la_ruta)
+app.use('/api', userRoutes)
 
 module.exports = app
