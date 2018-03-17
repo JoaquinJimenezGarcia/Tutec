@@ -42,29 +42,39 @@ function register(req, res){
     user.city = params.city
     user.zone = params.zone
 
-    if (params.password) {
-        bcrypt.hash(params.password, null, null, function(err, hash) {
-        user.password = hash
-
-        if (user.email != null && user.registeredAs != null) {
-            user.save((err, userStored) => {
-                if (err) {
-                    res.status(500).send({message: 'Error registering the user'})
-                } else {
-                    if (!userStored) {
-                        res.status(404).send({message: 'The user hasn\'t been registered'})
-                    } else {
-                        res.status(200).send({user: userStored})
-                    }
-                }
-            })
+    User.findOne({email: user.email.toLowerCase()}, (err, userExisting) => {
+        if(err) {
+            res.status(500).send({message: 'Error in the API.'})
         } else {
-            res.status(500).send({message: 'Missing params'})
+            if(!userExisting) {
+                if (params.password) {
+                    bcrypt.hash(params.password, null, null, function(err, hash) {
+                    user.password = hash
+            
+                        if (user.email != null && user.registeredAs != null) {
+                            user.save((err, userStored) => {
+                                if (err) {
+                                    res.status(500).send({message: 'Error registering the user'})
+                                } else {
+                                    if (!userStored) {
+                                        res.status(404).send({message: 'The user hasn\'t been registered'})
+                                    } else {
+                                        res.status(200).send({user: userStored})
+                                    }
+                                }
+                            })
+                        } else {
+                            res.status(500).send({message: 'Missing params'})
+                        }
+                    })
+                } else {
+                    res.status(500).send({message: 'Select a password'})
+                }
+            } else {
+                res.status(404).send({message: 'This email is currently in use.'})
+            }
         }
     })
-    } else {
-        res.status(500).send({message: 'Select a password'})
-    }
 }
 
 module.exports = {
