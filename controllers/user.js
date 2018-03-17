@@ -3,6 +3,35 @@
 var User = require('../models/user')
 const bcrypt = require('bcrypt-nodejs')
 
+function login(req, res){
+    var params = req.body
+
+    var email = params.email
+    var password = params.password
+    
+    User.findOne({email: email.toLowerCase()}, (err, user) => {
+        if(err) {
+            res.status(500).send({message: 'Error in the API.'})
+        } else {
+            if(!user) {
+                res.status(404).send({message: 'The user doesn\'t exist.'})
+            } else {
+                bcrypt.compare(password, user.password, function(err, check){
+                    if (check) {
+                        if(params.gethash){
+                            
+                        } else {
+                            res.status(200).send({user})
+                        }
+                    } else {
+                        res.status(404).send({message: 'Wrong password.'})
+                    }
+                })
+            }
+        }
+    })
+}
+
 function register(req, res){
     var user = new User()
     var params = req.body
@@ -39,5 +68,6 @@ function register(req, res){
 }
 
 module.exports = {
-  register
+  register,
+  login
 }
