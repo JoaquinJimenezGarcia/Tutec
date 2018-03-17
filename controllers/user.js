@@ -80,7 +80,36 @@ function register(req, res){
     })
 }
 
+function update(req, res) {
+    var userId = req.params.id 
+    var update = req.body
+
+    if (update.password) {
+        bcrypt.hash(update.password, null, null, function(err, hash) {
+            update.password = hash
+            console.log( update)
+        })
+    } 
+    
+    console.log("Despues")
+    console.log(update)
+
+    User.findByIdAndUpdate(userId, update, (err, userUpdated) => {
+        if (err){
+            res.status(500).send({message: 'Error updating user.'})
+        } else {
+            if(!userUpdated) {
+                res.status(404).send({message: 'Internal error updating the user.'})
+            } else {
+                res.status(200).send({user: userUpdated})
+            }
+        }
+    })
+    
+}
+
 module.exports = {
   register,
-  login
+  login, 
+  update
 }
