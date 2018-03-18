@@ -44,6 +44,10 @@ function register(req, res){
     user.registeredAs = 'USER'
     user.city = params.city
     user.zone = params.zone
+    user.photo = 'null'
+    rate: 1
+    commentaries: ''
+    publicationsOrReparations: 0
 
     User.findOne({email: user.email.toLowerCase()}, (err, userExisting) => {
         if(err) {
@@ -112,8 +116,37 @@ function toUpdate(req, res, update, userId){
     })
 }
 
+function uploadImage(req, res) {
+    var userId = req.params.id;
+    var file_name = 'Not uploaded'
+
+    if(req.files) {
+        var file_path = req.files.image.path 
+        var file_split = file_path.split('/')
+        var file_name = file_split[2]
+        var ext_split = file_name.split('.')
+        var file_ext = ext_split[1]
+        
+        if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'gif') {
+            User.findByIdAndUpdate(userId, {photo: file_name}, (err, userUpdated) => {
+                if(!userUpdated) {
+                    res.status(404).send({message: 'Internal error updating the user.'})
+                } else {
+                    res.status(200).send({user: userUpdated})
+                }
+            })
+        } else {
+            res.status(400).send({message: 'The extension of your file is not allowed. Please, verift it is png, jpg or gif.'})
+        }
+        console.log(file_ext)
+    } else {
+        res.status(400).send({message: 'Error uploading image.'})
+    }
+}
+
 module.exports = {
   register,
   login, 
-  update
+  update,
+  uploadImage
 }
