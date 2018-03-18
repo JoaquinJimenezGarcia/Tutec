@@ -3,6 +3,8 @@
 var User = require('../models/user')
 const bcrypt = require('bcrypt-nodejs')
 var jwt = require('../services/jwt')
+const fs = require('fs')
+const path = require('path')
 
 function login(req, res){
     var params = req.body
@@ -138,15 +140,28 @@ function uploadImage(req, res) {
         } else {
             res.status(400).send({message: 'The extension of your file is not allowed. Please, verift it is png, jpg or gif.'})
         }
-        console.log(file_ext)
     } else {
         res.status(400).send({message: 'Error uploading image.'})
     }
+}
+
+function getImageFile(req, res) {
+    var imageFile = req.params.imageFile
+    var path_file = './uploads/users/' + imageFile
+    
+    fs.exists(path_file, function(exists){
+        if (exists) {
+            res.sendFile(path.resolve(path_file))
+        } else {
+            res.status(400).send({message: 'The image doesn\'t exist.'})
+        }
+    })
 }
 
 module.exports = {
   register,
   login, 
   update,
-  uploadImage
+  uploadImage,
+  getImageFile
 }
