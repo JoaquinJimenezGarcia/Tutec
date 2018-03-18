@@ -84,16 +84,21 @@ function update(req, res) {
     var userId = req.params.id 
     var update = req.body
 
+    if(update.email){
+        return res.status(500).send({message: 'You cannot update your email yet.'})
+    }
+
     if (update.password) {
         bcrypt.hash(update.password, null, null, function(err, hash) {
             update.password = hash
-            console.log( update)
+            toUpdate(req, res, update, userId)
         })
-    } 
-    
-    console.log("Despues")
-    console.log(update)
+    } else {
+        toUpdate(req, res, update, userId)
+    }
+}
 
+function toUpdate(req, res, update, userId){
     User.findByIdAndUpdate(userId, update, (err, userUpdated) => {
         if (err){
             res.status(500).send({message: 'Error updating user.'})
@@ -105,7 +110,6 @@ function update(req, res) {
             }
         }
     })
-    
 }
 
 module.exports = {
