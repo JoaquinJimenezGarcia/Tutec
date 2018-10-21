@@ -29,7 +29,7 @@ function login(req, res) {
                             res.status(200).send({user})
                         }
                     } else {
-                        res.status(404).send({message: 'Wrong password.'})
+                        res.status(404).send({message: 'Password equivocado miarma.'})
                     }
                 })
             }

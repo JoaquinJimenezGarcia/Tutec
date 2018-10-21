@@ -1,7 +1,7 @@
 'use strict'
 
 const express = require('express')
-var AdvertController = require ('../controllers/advert')
+var AdvertController = require('../controllers/advert')
 var api = express.Router()
 var md_auth = require('../middlewares/authenticated')
 
