@@ -13,7 +13,7 @@ var AdvertSchema = Schema({
     zone: String,
     peopleInterested: Number,
     visits: Number,
-    publicated: { type: Date, default: Date.now }
+    publicated: {type: Date, default: Date.now}
 })
 
 module.exports = mongoose.model('Advert', AdvertSchema)
