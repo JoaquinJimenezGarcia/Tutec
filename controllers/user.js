@@ -6,22 +6,22 @@ var jwt = require('../services/jwt')
 const fs = require('fs')
 const path = require('path')
 
-function login(req, res){
+function login(req, res) {
     var params = req.body
 
     var email = params.email
     var password = params.password
-    
+
     User.findOne({email: email.toLowerCase()}, (err, user) => {
-        if(err) {
+        if (err) {
             res.status(500).send({message: 'Error in the API.'})
         } else {
-            if(!user) {
+            if (!user) {
                 res.status(404).send({message: 'The user doesn\'t exist.'})
             } else {
-                bcrypt.compare(password, user.password, function(err, check){
+                bcrypt.compare(password, user.password, function (err, check) {
                     if (check) {
-                        if(params.gethash){
+                        if (params.gethash) {
                             res.status(200).send({
                                 token: jwt.createToken(user)
                             })
@@ -37,7 +37,7 @@ function login(req, res){
     })
 }
 
-function register(req, res){
+function register(req, res) {
     var user = new User()
     var params = req.body
 
@@ -47,19 +47,16 @@ function register(req, res){
     user.city = params.city
     user.zone = params.zone
     user.photo = 'null'
-    rate: 1
-    commentaries: ''
-    publicationsOrReparations: 0
 
     User.findOne({email: user.email.toLowerCase()}, (err, userExisting) => {
-        if(err) {
+        if (err) {
             res.status(500).send({message: 'Error in the API.'})
         } else {
-            if(!userExisting) {
+            if (!userExisting) {
                 if (params.password) {
-                    bcrypt.hash(params.password, null, null, function(err, hash) {
-                    user.password = hash
-            
+                    bcrypt.hash(params.password, null, null, function (err, hash) {
+                        user.password = hash
+
                         if (user.email != null && user.registeredAs != null) {
                             user.save((err, userStored) => {
                                 if (err) {
@@ -87,15 +84,15 @@ function register(req, res){
 }
 
 function update(req, res) {
-    var userId = req.params.id 
+    var userId = req.params.id
     var update = req.body
 
-    if(update.email){
+    if (update.email) {
         return res.status(500).send({message: 'You cannot update your email yet.'})
     }
 
     if (update.password) {
-        bcrypt.hash(update.password, null, null, function(err, hash) {
+        bcrypt.hash(update.password, null, null, function (err, hash) {
             update.password = hash
             toUpdate(req, res, update, userId)
         })
@@ -104,12 +101,12 @@ function update(req, res) {
     }
 }
 
-function toUpdate(req, res, update, userId){
+function toUpdate(req, res, update, userId) {
     User.findByIdAndUpdate(userId, update, (err, userUpdated) => {
-        if (err){
+        if (err) {
             res.status(500).send({message: 'Error updating user.'})
         } else {
-            if(!userUpdated) {
+            if (!userUpdated) {
                 res.status(404).send({message: 'Internal error updating the user.'})
             } else {
                 res.status(200).send({user: userUpdated})
@@ -122,16 +119,16 @@ function uploadImage(req, res) {
     var userId = req.params.id;
     var file_name = 'Not uploaded'
 
-    if(req.files) {
-        var file_path = req.files.image.path 
+    if (req.files) {
+        var file_path = req.files.image.path
         var file_split = file_path.split('/')
         var file_name = file_split[2]
         var ext_split = file_name.split('.')
         var file_ext = ext_split[1]
-        
+
         if (file_ext == 'png' || file_ext == 'jpg' || file_ext == 'gif') {
             User.findByIdAndUpdate(userId, {photo: file_name}, (err, userUpdated) => {
-                if(!userUpdated) {
+                if (!userUpdated) {
                     res.status(404).send({message: 'Internal error updating the user.'})
                 } else {
                     res.status(200).send({user: userUpdated})
@@ -148,8 +145,8 @@ function uploadImage(req, res) {
 function getImageFile(req, res) {
     var imageFile = req.params.imageFile
     var path_file = './uploads/users/' + imageFile
-    
-    fs.exists(path_file, function(exists){
+
+    fs.exists(path_file, function (exists) {
         if (exists) {
             res.sendFile(path.resolve(path_file))
         } else {
@@ -159,9 +156,9 @@ function getImageFile(req, res) {
 }
 
 module.exports = {
-  register,
-  login, 
-  update,
-  uploadImage,
-  getImageFile
+    register,
+    login,
+    update,
+    uploadImage,
+    getImageFile
 }
