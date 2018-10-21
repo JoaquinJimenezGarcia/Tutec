@@ -11,8 +11,8 @@ var UserSchema = Schema({
     password: String,
     city: String,
     zone: String,
-    rate: { type: Number, min: 1, max: 5 },
-    dateOfRegistration: { type: Date, default: Date.now },
+    rate: {type: Number, min: 1, max: 5},
+    dateOfRegistration: {type: Date, default: Date.now},
     commentaries: String,
     publicationsOrReparations: Number
 })

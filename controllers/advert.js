@@ -2,7 +2,7 @@
 
 var Advert = require('../models/advert')
 
-function post(req, res){
+function post(req, res) {
     var advert = new Advert()
     var params = req.body
 
@@ -32,5 +32,5 @@ function post(req, res){
 }
 
 module.exports = {
-  post
+    post
 }
